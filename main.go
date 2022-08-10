@@ -24,10 +24,28 @@ type Director struct {
 
 var movies []Movie
 
+func getMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(movies)
+}
+
+func deleteMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	for index, item := range movies {
+		if item.ID == params["id"]{
+			movies = append(movies[:index], movies[index+1:]...)
+			break
+		}
+			
+	}
+}
+
 func main() {
 	r := mux.NewRouter()
 
-	movies = append(movies, Movie{ID: "1", Isbn: "236915", Title: "Межсезонье", Director: &Director{Firstname: "Евгений", Lastname: "Сладкоедов"}})
+	movies = append(movies, Movie{ID: "1", Isbn: "236915", Title: "Измены", Director: &Director{Firstname: "Евгений", Lastname: "Сладкоедов"}})
+	movies = append(movies, Movie{ID: "2", Isbn: "281337", Title: "Модель XL", Director: &Director{Firstname: "Евгений", Lastname: "Лисицын"}})
 
 	r.HandleFunc("/movies", getMovies).Methods("GET")
 	r.HandleFunc("/movies/{id}", getMovie).Methods("GET")
